@@ -16,7 +16,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 2.8.12)
 
 project (mapnik)
 
@@ -45,6 +45,7 @@ option(ENABLE_LOG "This option controls which severity levels should be compiled
 set(DEFAULT_LOG_SEVERITY "error" CACHE STRING "The DEFAULT_LOG_SEVERITY option controls which severity level will be used by default at runtime - the value it will be initialized to at startup. It is not recommended to change this option at configuration time, unless you are a developer or doing customized packaging of Mapnik. Users can change the severity level easily at runtime. The default level is error. Other named severity levels are: debug, warn, none. An important caveat is that the ENABLE_LOG option controls which severity levels are compiled into Mapnik by default, so setting DEFAULT_LOG_SEVERITY to warn or debug will have no effect unless ENABLE_LOG is TRUE.")
 option(RENDERING_STATS "This is an experimental option that may be removed in future releases. It defaults to FALSE, but can be set to TRUE to enable verbose logging of rendering behavior providing the timing of style and layer processing." FALSE)
 option(THREAD_SAFE "Build mapnik in thread-safe mode" TRUE)
+option(BIGINT "Compile support for 64-bit integers in mapnik::value" TRUE)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
 
@@ -58,6 +59,13 @@ include_directories(
 
 # Mapnik 3.x depends on c++11 standard.
 set (CMAKE_CXX_STANDARD 11)
+
+# If we're using modern (after 2005) Visual Studio compiler we need to compile
+# with /bigobj to get around fatal error C1128: number of sections exceeded
+# object file format limit.
+if (MSVC_VERSION VERSION_GREATER 1400)
+     add_compile_options(/bigobj)
+endif ()
 
 set(MAPNIK_PLUGINS "" CACHE INTERNAL "Full paths to mapnik plugins. Automatically filled.")
 set(MAPNIK_BINARY_DIRECTORIES "" CACHE INTERNAL "Full paths to directories of dependencies. Automatically filled.")
@@ -86,6 +94,7 @@ add_feature_info("TopoJSON plugin" PLUGIN_TOPOJSON "TopoJSON plugin")
 add_feature_info("Memory mapped file" MAPNIK_MEMORY_MAPPED_FILE "Utilize memory-mapped files in plugins (higher memory usage, better performance)")
 add_feature_info("Native grid renderer" NATIVE_GRID_RENDERER "Build support for native grid renderer")
 add_feature_info("Thread safe" THREAD_SAFE "Compile to use thread locks")
+add_feature_info("64-bit integers" BIGINT "Compile support for 64-bit integers in mapnik::value")
 add_feature_info("Statistics" ENABLE_STATS "Compile with extensive statistics")
 add_feature_info("Logging" ENABLE_LOG "Compile with logging support")
 add_feature_info("Rendering statistics" RENDERING_STATS "Compile with rendering stats")
@@ -93,6 +102,10 @@ add_feature_info("Rendering statistics" RENDERING_STATS "Compile with rendering 
 if (THREAD_SAFE)
     add_definitions(-DMAPNIK_THREADSAFE)
 endif (THREAD_SAFE)
+
+if (BIGINT)
+    add_definitions(-DBIGINT)
+endif (BIGINT)
 
 if (ENABLE_STATS)
     add_definitions(-DMAPNIK_STATS)
