@@ -172,7 +172,6 @@ if (NATIVE_GRID_RENDERER)
         grid/process_shield_symbolizer.cpp
         grid/process_text_symbolizer.cpp
     )
-    add_definitions(-DGRID_RENDERER)   
 endif (NATIVE_GRID_RENDERER)
 
 

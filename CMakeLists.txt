@@ -49,7 +49,6 @@ option(THREAD_SAFE "Build mapnik in thread-safe mode" TRUE)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
 
 include_directories(
-    ${mapnik_SOURCE_DIR}
     ${mapnik_BINARY_DIR}
     ${mapnik_SOURCE_DIR}/deps
     ${mapnik_SOURCE_DIR}/deps/agg/include
@@ -84,6 +83,8 @@ add_feature_info("shape plugin" PLUGIN_SHAPE "shape plugin")
 add_feature_info("sqlite plugin" PLUGIN_SQLITE "sqlite plugin")
 add_feature_info("TopoJSON plugin" PLUGIN_TOPOJSON "TopoJSON plugin")
 
+add_feature_info("Memory mapped file" MAPNIK_MEMORY_MAPPED_FILE "Utilize memory-mapped files in plugins (higher memory usage, better performance)")
+add_feature_info("Native grid renderer" NATIVE_GRID_RENDERER "Build support for native grid renderer")
 add_feature_info("Thread safe" THREAD_SAFE "Compile to use thread locks")
 add_feature_info("Statistics" ENABLE_STATS "Compile with extensive statistics")
 add_feature_info("Logging" ENABLE_LOG "Compile with logging support")
@@ -109,13 +110,17 @@ if (MAPNIK_MEMORY_MAPPED_FILE)
     add_definitions(-DMAPNIK_MEMORY_MAPPED_FILE)
 endif (MAPNIK_MEMORY_MAPPED_FILE)
 
+if (NATIVE_GRID_RENDERER)
+    add_definitions(-DGRID_RENDERER)   
+endif (NATIVE_GRID_RENDERER)
+
 
 # Find required dependencies in advance
 
 
 # boost
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_STATIC_RUNTIME OFF)
+#set(Boost_USE_STATIC_LIBS OFF)
+#set(Boost_USE_STATIC_RUNTIME OFF)
 find_package(Boost REQUIRED COMPONENTS filesystem regex system)
 set_package_properties(Boost PROPERTIES
     DESCRIPTION "Portable C++ source libraries"
@@ -123,37 +128,13 @@ set_package_properties(Boost PROPERTIES
     TYPE REQUIRED
     PURPOSE "Required for all core operations.")
 include_directories(${Boost_INCLUDE_DIRS})
-add_definitions(-DBoost_LIB_DIAGNOSTIC_DEFINITIONS -DBOOST_ALL_DYN_LINK -DBOOST_ALL_NO_LIB)
-get_filename_component(boost_binary_directories ${Boost_LIBRARY_DIRS}/../bin ABSOLUTE)
+#add_definitions(-DBoost_LIB_DIAGNOSTIC_DEFINITIONS -DBOOST_ALL_DYN_LINK -DBOOST_ALL_NO_LIB)
+get_filename_component(boost_binary_directories ${Boost_INCLUDE_DIRS}/../bin ABSOLUTE)
 list(APPEND MAPNIK_BINARY_DIRECTORIES ${boost_binary_directories})
 
 
 # ICU
-set(icu_components uc)
-
-# Check whether the boost libary uses ICU.
-include(CheckCXXSourceRuns)
-
 find_package(ICU REQUIRED COMPONENTS uc i18n)
-
-set(CMAKE_REQUIRED_LIBRARIES ${ICU_LIBRARIES})
-
-if (CMAKE_BUILD_TYPE EQUAL "Debug")
-    list(APPEND CMAKE_REQUIRED_LIBRARIES ${Boost_REGEX_LIBRARY_DEBUG})
-else (CMAKE_BUILD_TYPE EQUAL "Debug")
-    list(APPEND CMAKE_REQUIRED_LIBRARIES ${Boost_REGEX_LIBRARY_RELEASE})
-endif (CMAKE_BUILD_TYPE EQUAL "Debug")
-
-set(CMAKE_REQUIRED_DEFINITIONS -DBOOST_ALL_DYN_LINK -DBOOST_ALL_NO_LIB)
-set(CMAKE_REQUIRED_INCLUDES ${Boost_INCLUDE_DIRS} ${ICU_INCLUDE_DIRS})
-file(READ ${CMAKE_MODULE_PATH}/CheckBoostRegexIcu.cpp CheckBoostRegexIcuSource)
-CHECK_CXX_SOURCE_RUNS("${CheckBoostRegexIcuSource}" BOOST_REGEX_HAS_ICU)
-
-if (BOOST_REGEX_HAS_ICU)
-    list(APPEND icu_components i18n)
-endif (BOOST_REGEX_HAS_ICU)
-
-find_package(ICU REQUIRED COMPONENTS ${icu_components})
 set_package_properties(ICU PROPERTIES
     DESCRIPTION "Unicode and Globalization support library"
     URL "http://site.icu-project.org/"
@@ -163,6 +144,33 @@ include_directories(${ICU_INCLUDE_DIRS})
 get_filename_component(icu_binary_directories ${ICU_INCLUDE_DIRS}/../bin ABSOLUTE)
 list(APPEND MAPNIK_BINARY_DIRECTORIES ${icu_binary_directories})
 
+# Check whether the boost libary uses ICU.
+include(CheckCXXSourceRuns)
+
+set(CMAKE_REQUIRED_LIBRARIES ${ICU_LIBRARIES})
+
+if (CMAKE_BUILD_TYPE EQUAL "Debug")
+    list(APPEND CMAKE_REQUIRED_LIBRARIES ${Boost_REGEX_LIBRARY_DEBUG})
+else (CMAKE_BUILD_TYPE EQUAL "Debug")
+    list(APPEND CMAKE_REQUIRED_LIBRARIES ${Boost_REGEX_LIBRARY_RELEASE})
+endif (CMAKE_BUILD_TYPE EQUAL "Debug")
+
+#set(CMAKE_REQUIRED_DEFINITIONS -DBOOST_ALL_DYN_LINK -DBOOST_ALL_NO_LIB)
+set(ORG_PATH $ENV{PATH})
+set(ENV{PATH} "$ENV{PATH};${boost_binary_directories}")
+set(CMAKE_REQUIRED_INCLUDES ${Boost_INCLUDE_DIRS} ${ICU_INCLUDE_DIRS})
+set(CMAKE_REQUIRED_LIBRARIES ${Boost_REGEX_LIBRARY} ${ICU_LIBRARIES})
+file(READ ${CMAKE_MODULE_PATH}/CheckBoostRegexIcu.cpp CheckBoostRegexIcuSource)
+CHECK_CXX_SOURCE_RUNS("${CheckBoostRegexIcuSource}" BOOST_REGEX_HAS_ICU)
+
+if (BOOST_REGEX_HAS_ICU)
+    add_definitions(-DBOOST_REGEX_HAS_ICU)
+    message(STATUS "Boost regex has been built with ICU.")
+else (BOOST_REGEX_HAS_ICU)
+    message(STATUS "Boost regex was NOT built with ICU.")
+endif (BOOST_REGEX_HAS_ICU)
+
+set(ENV{PATH} "${ORG_PATH}")
 
 # iconv
 find_package(ICONV REQUIRED)
@@ -208,7 +216,7 @@ set_package_properties(HarfBuzz PROPERTIES
     TYPE REQUIRED
     PURPOSE "Required for all font rendering.")
 include_directories(${HARFBUZZ_INCLUDE_DIRS})
-get_filename_component(harfbuzz_binary_directories ${HARFBUZZ_LIBRARY}/../../bin ABSOLUTE)
+get_filename_component(harfbuzz_binary_directories ${HARFBUZZ_LIBRARIES}/../../bin ABSOLUTE)
 list(APPEND MAPNIK_BINARY_DIRECTORIES ${harfbuzz_binary_directories})
 
 
