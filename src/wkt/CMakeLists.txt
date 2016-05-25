@@ -20,4 +20,4 @@ file(GLOB mapnik-wkt_sources
      LIST_DIRECTORIES false
      *.cpp)
      
-add_library(mapnik-wkt ${mapnik-wkt_sources})
+add_library(mapnik-wkt STATIC ${mapnik-wkt_sources})

@@ -20,4 +20,4 @@ file(GLOB mapnik-json_sources
      LIST_DIRECTORIES false
      *.cpp)
      
-add_library(mapnik-json ${mapnik-json_sources})
+add_library(mapnik-json STATIC ${mapnik-json_sources})

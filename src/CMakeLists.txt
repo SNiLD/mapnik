@@ -155,6 +155,9 @@ set(mapnik_sources
     # to make it safe to try to compile them from Makefile wrapper
     grid/process_markers_symbolizer.cpp
     grid/process_group_symbolizer.cpp
+    
+    # windows
+    util/utf_conv_win.cpp
 )
 
 
@@ -179,6 +182,7 @@ set(binary_directories ${MAPNIK_BINARY_DIRECTORIES})
 
 unset(mapnik_libraries)
 
+list(APPEND mapnik_libraries agg)
 list(APPEND mapnik_libraries ${Boost_LIBRARIES})
 list(APPEND mapnik_libraries ${ICU_LIBRARIES})
 list(APPEND mapnik_libraries ${ICONV_LIBRARY})
@@ -188,57 +192,27 @@ list(APPEND mapnik_libraries ${HARFBUZZ_LIBRARIES})
 list(APPEND mapnik_libraries ${PROJ_LIBRARY})
 
 
-# JPEG
-find_package(JPEG)
-set_package_properties(JPEG PROPERTIES
-    DESCRIPTION "JPEG library"
-    URL "http://www.ijg.org/"
-    TYPE RECOMMENDED
-    PURPOSE "Enables using JPEG images.")
 if (USE_JPEG AND JPEG_FOUND)
     list(APPEND mapnik_sources
         jpeg_reader.cpp
     )
-    include_directories(${JPEG_INCLUDE_DIR})
     list(APPEND mapnik_libraries ${JPEG_LIBRARIES})
-    get_filename_component(jpeg_binary_directories ${JPEG_INCLUDE_DIR}/../bin ABSOLUTE)
-    list(APPEND binary_directories ${jpeg_binary_directories})
 endif (USE_JPEG AND JPEG_FOUND)
 
 # PNG
-find_package(PNG)
-set_package_properties(PNG PROPERTIES
-    DESCRIPTION "Portable Network Graphics library"
-    URL "http://www.libpng.org/"
-    TYPE RECOMMENDED
-    PURPOSE "Enables using PNG images.")
 if (USE_PNG AND PNG_FOUND)
     list(APPEND mapnik_sources
         png_reader.cpp
     )
-    include_directories(${PNG_INCLUDE_DIRS})
-    add_definitions(${PNG_DEFINITIONS})
     list(APPEND mapnik_libraries ${PNG_LIBRARIES})
-    get_filename_component(png_binary_directories ${PNG_LIBRARY}/../../bin ABSOLUTE)
-    list(APPEND binary_directories ${png_binary_directories})
 endif (USE_PNG AND PNG_FOUND)
 
 # TIFF
-find_package(TIFF)
-set_package_properties(TIFF PROPERTIES
-    DESCRIPTION "TIFF library"
-    URL "http://www.libtiff.org/"
-    TYPE RECOMMENDED
-    PURPOSE "Enables using TIFF images.")
-
 if (USE_TIFF AND TIFF_FOUND)
     list(APPEND mapnik_sources
         tiff_reader.cpp
     )
-    include_directories(${TIFF_INCLUDE_DIR})
     list(APPEND mapnik_libraries ${TIFF_LIBRARIES})
-    get_filename_component(tiff_binary_directories ${TIFF_INCLUDE_DIR}/../bin ABSOLUTE)
-    list(APPEND binary_directories ${tiff_binary_directories})
 endif (USE_TIFF AND TIFF_FOUND)
 
 # SVG
@@ -252,26 +226,14 @@ if (USE_SVG)
         svg/output/process_line_symbolizer.cpp
         svg/output/process_polygon_symbolizer.cpp
     )
-    add_definitions(-DSVG_RENDERER)
 endif (USE_SVG)
 
 # libxml2
-find_package(LibXml2)
-set_package_properties(LibXml2 PROPERTIES
-    DESCRIPTION "XML processing library"
-    URL "http://xmlsoft.org/"
-    TYPE RECOMMENDED
-    PURPOSE "Enables more extensive XML support.")
-
 if (USE_LIBXML2 AND LIBXML2_FOUND)
     list(APPEND mapnik_sources
         libxml2_loader.cpp
     )
-    include_directories(${LIBXML2_INCLUDE_DIR})
-    add_definitions(${LIBXML2_DEFINITIONS} -DHAVE_LIBXML2)
     list(APPEND mapnik_libraries ${LIBXML2_LIBRARIES})
-    get_filename_component(xml2_binary_directories ${LIBXML2_LIBRARIES}/../../bin ABSOLUTE)
-    list(APPEND binary_directories ${xml2_binary_directories})
 else(USE_LIBXML2 AND LIBXML2_FOUND)
     list(APPEND mapnik_sources
         rapidxml_loader.cpp
@@ -279,16 +241,8 @@ else(USE_LIBXML2 AND LIBXML2_FOUND)
 endif (USE_LIBXML2 AND LIBXML2_FOUND)
 
 # cairo
-find_package(Cairo)
-set_package_properties(Cairo PROPERTIES
-    DESCRIPTION "2D graphics library with support for multiple output devices"
-    URL "http://www.cairographics.org/"
-    TYPE OPTIONAL
-    PURPOSE "Enables rendering with the cairo library.")
-
 if (USE_CAIRO AND CAIRO_FOUND)
     # Cairo dependencies
-    find_package(FontConfig REQUIRED)
     list(APPEND mapnik_sources
         cairo/cairo_context.cpp
         cairo/cairo_renderer.cpp
@@ -303,12 +257,7 @@ if (USE_CAIRO AND CAIRO_FOUND)
         cairo/process_raster_symbolizer.cpp
         cairo/process_building_symbolizer.cpp
     )
-    include_directories(${CAIRO_INCLUDE_DIRS} ${FONTCONFIG_INCLUDE_DIR})
-    add_definitions(-DHAVE_CAIRO)
     list(APPEND mapnik_libraries ${CAIRO_LIBRARIES} ${FONTCONFIG_LIBRARIES})
-    get_filename_component(fontconfig_binary_directories ${FONTCONFIG_LIBRARIES}/../../bin ABSOLUTE)
-    get_filename_component(cairo_binary_directories ${CAIRO_LIBRARIES}/../../bin ABSOLUTE)
-    list(APPEND binary_directories ${fontconfig_binary_directories} ${cairo_binary_directories})
 endif (USE_CAIRO AND CAIRO_FOUND)
 
 # Create the mapnik library

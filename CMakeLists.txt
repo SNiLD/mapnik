@@ -58,7 +58,7 @@ include_directories(
 )
 
 # Mapnik 3.x depends on c++11 standard.
-set (CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 11)
 
 # If we're using modern (after 2005) Visual Studio compiler we need to compile
 # with /bigobj to get around fatal error C1128: number of sections exceeded
@@ -128,13 +128,13 @@ if (NATIVE_GRID_RENDERER)
 endif (NATIVE_GRID_RENDERER)
 
 
-# Find required dependencies in advance
+# required dependencies
 
 
 # boost
 #set(Boost_USE_STATIC_LIBS OFF)
 #set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost REQUIRED COMPONENTS filesystem regex system)
+find_package(Boost REQUIRED COMPONENTS date_time filesystem regex system)
 set_package_properties(Boost PROPERTIES
     DESCRIPTION "Portable C++ source libraries"
     URL "http://www.boost.org/"
@@ -244,6 +244,97 @@ include_directories(${PROJ_INCLUDE_DIR})
 add_definitions(-DMAPNIK_USE_PROJ4)
 get_filename_component(proj_binary_directories ${PROJ_INCLUDE_DIR}/../bin ABSOLUTE)
 list(APPEND MAPNIK_BINARY_DIRECTORIES ${proj_binary_directories})
+
+
+# recommended/optional dependencies
+
+
+# JPEG
+if (USE_JPEG)
+    find_package(JPEG)
+    set_package_properties(JPEG PROPERTIES
+        DESCRIPTION "JPEG library"
+        URL "http://www.ijg.org/"
+        TYPE RECOMMENDED
+        PURPOSE "Enables using JPEG images.")
+    if (JPEG_FOUND)
+        include_directories(${JPEG_INCLUDE_DIR})
+        get_filename_component(jpeg_binary_directories ${JPEG_INCLUDE_DIR}/../bin ABSOLUTE)
+        list(APPEND MAPNIK_BINARY_DIRECTORIES ${jpeg_binary_directories})
+    endif (JPEG_FOUND)
+endif (USE_JPEG)
+
+# PNG
+if (USE_PNG)
+    find_package(PNG)
+    set_package_properties(PNG PROPERTIES
+        DESCRIPTION "Portable Network Graphics library"
+        URL "http://www.libpng.org/"
+        TYPE RECOMMENDED
+        PURPOSE "Enables using PNG images.")
+    if (PNG_FOUND)
+        include_directories(${PNG_INCLUDE_DIRS})
+        add_definitions(${PNG_DEFINITIONS})
+        get_filename_component(png_binary_directories ${PNG_LIBRARY}/../../bin ABSOLUTE)
+        list(APPEND MAPNIK_BINARY_DIRECTORIES ${png_binary_directories})
+    endif (PNG_FOUND)
+endif (USE_PNG)
+
+# TIFF
+if (USE_TIFF)
+    find_package(TIFF)
+    set_package_properties(TIFF PROPERTIES
+        DESCRIPTION "TIFF library"
+        URL "http://www.libtiff.org/"
+        TYPE RECOMMENDED
+        PURPOSE "Enables using TIFF images.")
+    if (TIFF_FOUND)
+        include_directories(${TIFF_INCLUDE_DIR})
+        get_filename_component(tiff_binary_directories ${TIFF_INCLUDE_DIR}/../bin ABSOLUTE)
+        list(APPEND MAPNIK_BINARY_DIRECTORIES ${tiff_binary_directories})
+    endif (TIFF_FOUND)
+endif (USE_TIFF)
+
+# SVG
+if (USE_SVG)
+    add_definitions(-DSVG_RENDERER)
+endif (USE_SVG)
+
+# libxml2
+if (USE_LIBXML2)
+    find_package(LibXml2)
+    set_package_properties(LibXml2 PROPERTIES
+        DESCRIPTION "XML processing library"
+        URL "http://xmlsoft.org/"
+        TYPE RECOMMENDED
+        PURPOSE "Enables more extensive XML support.")
+    if (LIBXML2_FOUND)
+        include_directories(${LIBXML2_INCLUDE_DIR})
+        add_definitions(${LIBXML2_DEFINITIONS} -DHAVE_LIBXML2)
+        get_filename_component(xml2_binary_directories ${LIBXML2_LIBRARIES}/../../bin ABSOLUTE)
+        list(APPEND MAPNIK_BINARY_DIRECTORIES ${xml2_binary_directories})
+    endif (LIBXML2_FOUND)
+endif (USE_LIBXML2)
+
+# cairo
+if (USE_CAIRO)
+    find_package(Cairo)
+    set_package_properties(Cairo PROPERTIES
+        DESCRIPTION "2D graphics library with support for multiple output devices"
+        URL "http://www.cairographics.org/"
+        TYPE OPTIONAL
+        PURPOSE "Enables rendering with the cairo library.")
+    if (CAIRO_FOUND)
+        include_directories(${CAIRO_INCLUDE_DIRS} ${FONTCONFIG_INCLUDE_DIR})
+        add_definitions(-DHAVE_CAIRO)
+        get_filename_component(fontconfig_binary_directories ${FONTCONFIG_LIBRARIES}/../../bin ABSOLUTE)
+        get_filename_component(cairo_binary_directories ${CAIRO_LIBRARIES}/../../bin ABSOLUTE)
+        list(APPEND MAPNIK_BINARY_DIRECTORIES ${fontconfig_binary_directories} ${cairo_binary_directories})
+    endif (CAIRO_FOUND)
+endif (USE_CAIRO)
+
+
+# plugin dependencies
 
 
 if (PLUGIN_GDAL OR PLUGIN_OGR)
