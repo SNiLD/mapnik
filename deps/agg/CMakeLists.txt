@@ -22,4 +22,4 @@ file(GLOB agg_sources
      
 add_library(agg STATIC ${agg_sources})
 
-target_compile_definitions(agg PUBLIC -DMAPNIK_EXPORTS)
+target_compile_definitions(agg PRIVATE -DMAPNIK_EXPORTS)

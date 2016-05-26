@@ -261,9 +261,9 @@ if (USE_CAIRO AND CAIRO_FOUND)
 endif (USE_CAIRO AND CAIRO_FOUND)
 
 # Create the mapnik library
-add_library(mapnik SHARED ${mapnik_sources})
+add_library(mapnik ${mapnik_sources})
 
-target_compile_definitions(mapnik PUBLIC -DMAPNIK_EXPORTS)
+set_target_properties(mapnik PROPERTIES DEFINE_SYMBOL MAPNIK_EXPORTS)
 
 target_link_libraries(mapnik ${mapnik_libraries})
 

@@ -26,11 +26,9 @@ set(mapnik_plugin_shape_sources
 
 add_library(shape MODULE ${mapnik_plugin_shape_sources})
 
-target_compile_definitions(shape PUBLIC -DMAPNIK_EXPORTS)
-
 set_target_properties(shape PROPERTIES SUFFIX ".input")
 
-target_link_libraries(shape ${Boost_LIBRARIES} ${ICU_LIBRARIES} mapnik)
+target_link_libraries(shape mapnik)
 
 install(TARGETS shape LIBRARY DESTINATION "bin/${CMAKE_BUILD_TYPE}/mapnik/input")
 

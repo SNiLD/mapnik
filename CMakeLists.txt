@@ -57,23 +57,40 @@ include_directories(
     ${mapnik_SOURCE_DIR}/include
 )
 
+
 # Mapnik 3.x depends on c++11 standard.
 set(CMAKE_CXX_STANDARD 11)
+
 
 # If we're using modern (after 2005) Visual Studio compiler we need to compile
 # with /bigobj to get around fatal error C1128: number of sections exceeded
 # object file format limit.
 if (MSVC_VERSION VERSION_GREATER 1400)
-     add_compile_options(/bigobj)
+     add_compile_options(/bigobj /Zc:inline)
 endif ()
+
+
+# faster compile
+# http://www.boost.org/doc/libs/1_47_0/libs/spirit/doc/html/spirit/what_s_new/spirit_2_5.html#spirit.what_s_new.spirit_2_5.breaking_changes
+add_definitions(-DBOOST_SPIRIT_NO_PREDEFINED_TERMINALS=1)
+add_definitions(-DBOOST_PHOENIX_NO_PREDEFINED_TERMINALS=1)
+
+
+# c++11 support / https://github.com/mapnik/mapnik/issues/1683
+#  - upgrade to PHOENIX_V3 since that is needed for c++11 compile
+add_definitions(-DBOOST_SPIRIT_USE_PHOENIX_V3=1)
+
 
 set(MAPNIK_PLUGINS "" CACHE INTERNAL "Full paths to mapnik plugins. Automatically filled.")
 set(MAPNIK_BINARY_DIRECTORIES "" CACHE INTERNAL "Full paths to directories of dependencies. Automatically filled.")
 
+
 # Enable logging for debug builds.
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions(-DMAPNIK_DEBUG)
     set(ENABLE_LOG TRUE)
 endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
+
 
 add_feature_info("JPEG support" USE_JPEG "Compile with JPEG support")
 add_feature_info("PNG support" USE_PNG "Compile with PNG support")
@@ -170,7 +187,7 @@ endif (CMAKE_BUILD_TYPE EQUAL "Debug")
 
 #set(CMAKE_REQUIRED_DEFINITIONS -DBOOST_ALL_DYN_LINK -DBOOST_ALL_NO_LIB)
 set(ORG_PATH $ENV{PATH})
-set(ENV{PATH} "$ENV{PATH};${boost_binary_directories}")
+set(ENV{PATH} "$ENV{PATH};${boost_binary_directories};${icu_binary_directories}")
 set(CMAKE_REQUIRED_INCLUDES ${Boost_INCLUDE_DIRS} ${ICU_INCLUDE_DIRS})
 set(CMAKE_REQUIRED_LIBRARIES ${Boost_REGEX_LIBRARY} ${ICU_LIBRARIES})
 file(READ ${CMAKE_MODULE_PATH}/CheckBoostRegexIcu.cpp CheckBoostRegexIcuSource)

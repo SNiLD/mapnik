@@ -24,11 +24,9 @@ set(mapnik_plugin_ogr_sources
 
 add_library(ogr MODULE ${mapnik_plugin_ogr_sources})
 
-target_compile_definitions(ogr PUBLIC -DMAPNIK_EXPORTS)
-
 set_target_properties(ogr PROPERTIES SUFFIX ".input")
 
-target_link_libraries(ogr ${GDAL_LIBRARY} ${Boost_LIBRARIES} ${ICU_LIBRARIES} mapnik)
+target_link_libraries(ogr ${GDAL_LIBRARY} mapnik)
 
 install(TARGETS ogr LIBRARY DESTINATION "bin/${CMAKE_BUILD_TYPE}/mapnik/input")
 

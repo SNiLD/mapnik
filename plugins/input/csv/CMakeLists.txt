@@ -25,11 +25,12 @@ set(mapnik_plugin_csv_sources
 
 add_library(csv MODULE ${mapnik_plugin_csv_sources})
 
-target_compile_definitions(csv PUBLIC -DMAPNIK_EXPORTS)
-
 set_target_properties(csv PROPERTIES SUFFIX ".input")
 
-target_link_libraries(csv ${Boost_LIBRARIES} ${ICU_LIBRARIES} mapnik-json mapnik-wkt mapnik)
+target_link_libraries(csv
+    mapnik-json
+    mapnik-wkt
+    mapnik)
 
 install(TARGETS csv LIBRARY DESTINATION "bin/${CMAKE_BUILD_TYPE}/mapnik/input")
 

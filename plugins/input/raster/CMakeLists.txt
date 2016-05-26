@@ -23,11 +23,9 @@ set(mapnik_plugin_raster_sources
 
 add_library(raster MODULE ${mapnik_plugin_raster_sources})
 
-target_compile_definitions(raster PUBLIC -DMAPNIK_EXPORTS)
-
 set_target_properties(raster PROPERTIES SUFFIX ".input")
 
-target_link_libraries(raster ${Boost_LIBRARIES} ${ICU_LIBRARIES} mapnik)
+target_link_libraries(raster mapnik)
 
 install(TARGETS raster LIBRARY DESTINATION "bin/${CMAKE_BUILD_TYPE}/mapnik/input")
 

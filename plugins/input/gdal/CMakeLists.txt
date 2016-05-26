@@ -22,11 +22,9 @@ set(mapnik_plugin_gdal_sources
 
 add_library(gdal MODULE ${mapnik_plugin_gdal_sources})
 
-target_compile_definitions(gdal PUBLIC -DMAPNIK_EXPORTS)
-
 set_target_properties(gdal PROPERTIES SUFFIX ".input")
 
-target_link_libraries(gdal ${GDAL_LIBRARY} ${Boost_LIBRARIES} ${ICU_LIBRARIES} mapnik)
+target_link_libraries(gdal ${GDAL_LIBRARY} mapnik)
 
 install(TARGETS gdal LIBRARY DESTINATION "bin/${CMAKE_BUILD_TYPE}/mapnik/input")
 

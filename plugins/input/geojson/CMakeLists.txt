@@ -25,11 +25,9 @@ set(mapnik_plugin_geojson_sources
 
 add_library(geojson MODULE ${mapnik_plugin_geojson_sources})
 
-target_compile_definitions(geojson PUBLIC -DMAPNIK_EXPORTS)
-
 set_target_properties(geojson PROPERTIES SUFFIX ".input")
 
-target_link_libraries(geojson ${Boost_LIBRARIES} ${ICU_LIBRARIES} mapnik-json mapnik)
+target_link_libraries(geojson mapnik-json mapnik)
 
 install(TARGETS geojson LIBRARY DESTINATION "bin/${CMAKE_BUILD_TYPE}/mapnik/input")
 
