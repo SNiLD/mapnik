@@ -179,6 +179,8 @@ else (CMAKE_BUILD_TYPE EQUAL "Debug")
 endif (CMAKE_BUILD_TYPE EQUAL "Debug")
 
 set(ORG_PATH $ENV{PATH})
+get_filename_component(boost_binary_directories ${Boost_INCLUDE_DIRS}/../bin ABSOLUTE)
+get_filename_component(icu_binary_directories ${ICU_INCLUDE_DIRS}/../bin ABSOLUTE)
 set(ENV{PATH} "$ENV{PATH};${boost_binary_directories};${icu_binary_directories}")
 set(CMAKE_REQUIRED_INCLUDES ${Boost_INCLUDE_DIRS} ${ICU_INCLUDE_DIRS})
 set(CMAKE_REQUIRED_LIBRARIES ${Boost_REGEX_LIBRARY} ${ICU_LIBRARIES})
