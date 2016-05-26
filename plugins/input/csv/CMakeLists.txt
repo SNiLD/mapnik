@@ -33,6 +33,3 @@ target_link_libraries(csv
     mapnik)
 
 install(TARGETS csv LIBRARY DESTINATION "bin/${CMAKE_BUILD_TYPE}/mapnik/input")
-
-set(MAPNIK_PLUGINS ${MAPNIK_PLUGINS} ${CMAKE_INSTALL_PREFIX}/bin/${CMAKE_BUILD_TYPE}/mapnik/input/csv.input PARENT_SCOPE)
-set(MAPNIK_BINARY_DIRECTORIES ${MAPNIK_BINARY_DIRECTORIES} ${mapnik_plugin_csv_binary_directories} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)

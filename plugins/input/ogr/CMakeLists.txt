@@ -29,6 +29,3 @@ set_target_properties(ogr PROPERTIES SUFFIX ".input")
 target_link_libraries(ogr ${GDAL_LIBRARY} mapnik)
 
 install(TARGETS ogr LIBRARY DESTINATION "bin/${CMAKE_BUILD_TYPE}/mapnik/input")
-
-set(MAPNIK_PLUGINS ${MAPNIK_PLUGINS} ${CMAKE_INSTALL_PREFIX}/bin/${CMAKE_BUILD_TYPE}/mapnik/input/ogr.input PARENT_SCOPE)
-set(MAPNIK_BINARY_DIRECTORIES ${MAPNIK_BINARY_DIRECTORIES} ${mapnik_plugin_ogr_binary_directories} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)

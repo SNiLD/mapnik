@@ -30,6 +30,3 @@ set_target_properties(geojson PROPERTIES SUFFIX ".input")
 target_link_libraries(geojson mapnik-json mapnik)
 
 install(TARGETS geojson LIBRARY DESTINATION "bin/${CMAKE_BUILD_TYPE}/mapnik/input")
-
-set(MAPNIK_PLUGINS ${MAPNIK_PLUGINS} ${CMAKE_INSTALL_PREFIX}/bin/${CMAKE_BUILD_TYPE}/mapnik/input/geojson.input PARENT_SCOPE)
-set(MAPNIK_BINARY_DIRECTORIES ${MAPNIK_BINARY_DIRECTORIES} ${mapnik_plugin_geojson_binary_directories} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)

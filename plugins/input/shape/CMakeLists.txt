@@ -31,6 +31,3 @@ set_target_properties(shape PROPERTIES SUFFIX ".input")
 target_link_libraries(shape mapnik)
 
 install(TARGETS shape LIBRARY DESTINATION "bin/${CMAKE_BUILD_TYPE}/mapnik/input")
-
-set(MAPNIK_PLUGINS ${MAPNIK_PLUGINS} ${CMAKE_INSTALL_PREFIX}/bin/${CMAKE_BUILD_TYPE}/mapnik/input/shape.input PARENT_SCOPE)
-set(MAPNIK_BINARY_DIRECTORIES ${MAPNIK_BINARY_DIRECTORIES} ${mapnik_plugin_shape_binary_directories} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)

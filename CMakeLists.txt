@@ -149,8 +149,6 @@ endif (NATIVE_GRID_RENDERER)
 
 
 # boost
-#set(Boost_USE_STATIC_LIBS OFF)
-#set(Boost_USE_STATIC_RUNTIME OFF)
 find_package(Boost REQUIRED COMPONENTS date_time filesystem regex system)
 set_package_properties(Boost PROPERTIES
     DESCRIPTION "Portable C++ source libraries"
@@ -158,9 +156,6 @@ set_package_properties(Boost PROPERTIES
     TYPE REQUIRED
     PURPOSE "Required for all core operations.")
 include_directories(${Boost_INCLUDE_DIRS})
-#add_definitions(-DBoost_LIB_DIAGNOSTIC_DEFINITIONS -DBOOST_ALL_DYN_LINK -DBOOST_ALL_NO_LIB)
-get_filename_component(boost_binary_directories ${Boost_INCLUDE_DIRS}/../bin ABSOLUTE)
-list(APPEND MAPNIK_BINARY_DIRECTORIES ${boost_binary_directories})
 
 
 # ICU
@@ -171,8 +166,6 @@ set_package_properties(ICU PROPERTIES
     TYPE REQUIRED
     PURPOSE "Required for text conversions.")
 include_directories(${ICU_INCLUDE_DIRS})
-get_filename_component(icu_binary_directories ${ICU_INCLUDE_DIRS}/../bin ABSOLUTE)
-list(APPEND MAPNIK_BINARY_DIRECTORIES ${icu_binary_directories})
 
 # Check whether the boost libary uses ICU.
 include(CheckCXXSourceRuns)
@@ -185,7 +178,6 @@ else (CMAKE_BUILD_TYPE EQUAL "Debug")
     list(APPEND CMAKE_REQUIRED_LIBRARIES ${Boost_REGEX_LIBRARY_RELEASE})
 endif (CMAKE_BUILD_TYPE EQUAL "Debug")
 
-#set(CMAKE_REQUIRED_DEFINITIONS -DBOOST_ALL_DYN_LINK -DBOOST_ALL_NO_LIB)
 set(ORG_PATH $ENV{PATH})
 set(ENV{PATH} "$ENV{PATH};${boost_binary_directories};${icu_binary_directories}")
 set(CMAKE_REQUIRED_INCLUDES ${Boost_INCLUDE_DIRS} ${ICU_INCLUDE_DIRS})
@@ -210,8 +202,6 @@ set_package_properties(ICONV PROPERTIES
     TYPE REQUIRED
     PURPOSE "Required for text conversions (also dependency for some libraries).")
 include_directories(${ICONV_INCLUDE_DIR})
-get_filename_component(iconv_binary_directories ${ICONV_INCLUDE_DIR}/../bin ABSOLUTE)
-list(APPEND MAPNIK_BINARY_DIRECTORIES ${iconv_binary_directories})
 
 
 # zlib
@@ -222,8 +212,6 @@ set_package_properties(ZLIB PROPERTIES
     TYPE REQUIRED
     PURPOSE "Required for processing compressed material (also dependency for some libraries).")
 include_directories(${ZLIB_INCLUDE_DIRS})
-get_filename_component(zlib_binary_directories ${ZLIB_INCLUDE_DIRS}/../bin ABSOLUTE)
-list(APPEND MAPNIK_BINARY_DIRECTORIES ${zlib_binary_directories})
 
 
 # freetype
@@ -234,8 +222,6 @@ set_package_properties(Freetype PROPERTIES
     TYPE REQUIRED
     PURPOSE "Required for all font rendering.")
 include_directories(${FREETYPE_INCLUDE_DIRS})
-get_filename_component(freetype_binary_directories ${FREETYPE_LIBRARY}/../../bin ABSOLUTE)
-list(APPEND MAPNIK_BINARY_DIRECTORIES ${freetype_binary_directories})
 
 
 # harfbuzz
@@ -246,8 +232,6 @@ set_package_properties(HarfBuzz PROPERTIES
     TYPE REQUIRED
     PURPOSE "Required for all font rendering.")
 include_directories(${HARFBUZZ_INCLUDE_DIRS})
-get_filename_component(harfbuzz_binary_directories ${HARFBUZZ_LIBRARIES}/../../bin ABSOLUTE)
-list(APPEND MAPNIK_BINARY_DIRECTORIES ${harfbuzz_binary_directories})
 
 
 # proj.4
@@ -259,8 +243,6 @@ set_package_properties(Proj PROPERTIES
     PURPOSE "Required for all projection transformations.")
 include_directories(${PROJ_INCLUDE_DIR})
 add_definitions(-DMAPNIK_USE_PROJ4)
-get_filename_component(proj_binary_directories ${PROJ_INCLUDE_DIR}/../bin ABSOLUTE)
-list(APPEND MAPNIK_BINARY_DIRECTORIES ${proj_binary_directories})
 
 
 # recommended/optional dependencies
@@ -276,8 +258,6 @@ if (USE_JPEG)
         PURPOSE "Enables using JPEG images.")
     if (JPEG_FOUND)
         include_directories(${JPEG_INCLUDE_DIR})
-        get_filename_component(jpeg_binary_directories ${JPEG_INCLUDE_DIR}/../bin ABSOLUTE)
-        list(APPEND MAPNIK_BINARY_DIRECTORIES ${jpeg_binary_directories})
     endif (JPEG_FOUND)
 endif (USE_JPEG)
 
@@ -292,8 +272,6 @@ if (USE_PNG)
     if (PNG_FOUND)
         include_directories(${PNG_INCLUDE_DIRS})
         add_definitions(${PNG_DEFINITIONS})
-        get_filename_component(png_binary_directories ${PNG_LIBRARY}/../../bin ABSOLUTE)
-        list(APPEND MAPNIK_BINARY_DIRECTORIES ${png_binary_directories})
     endif (PNG_FOUND)
 endif (USE_PNG)
 
@@ -307,8 +285,6 @@ if (USE_TIFF)
         PURPOSE "Enables using TIFF images.")
     if (TIFF_FOUND)
         include_directories(${TIFF_INCLUDE_DIR})
-        get_filename_component(tiff_binary_directories ${TIFF_INCLUDE_DIR}/../bin ABSOLUTE)
-        list(APPEND MAPNIK_BINARY_DIRECTORIES ${tiff_binary_directories})
     endif (TIFF_FOUND)
 endif (USE_TIFF)
 
@@ -328,8 +304,6 @@ if (USE_LIBXML2)
     if (LIBXML2_FOUND)
         include_directories(${LIBXML2_INCLUDE_DIR})
         add_definitions(${LIBXML2_DEFINITIONS} -DHAVE_LIBXML2)
-        get_filename_component(xml2_binary_directories ${LIBXML2_LIBRARIES}/../../bin ABSOLUTE)
-        list(APPEND MAPNIK_BINARY_DIRECTORIES ${xml2_binary_directories})
     endif (LIBXML2_FOUND)
 endif (USE_LIBXML2)
 
@@ -344,9 +318,6 @@ if (USE_CAIRO)
     if (CAIRO_FOUND)
         include_directories(${CAIRO_INCLUDE_DIRS} ${FONTCONFIG_INCLUDE_DIR})
         add_definitions(-DHAVE_CAIRO)
-        get_filename_component(fontconfig_binary_directories ${FONTCONFIG_LIBRARIES}/../../bin ABSOLUTE)
-        get_filename_component(cairo_binary_directories ${CAIRO_LIBRARIES}/../../bin ABSOLUTE)
-        list(APPEND MAPNIK_BINARY_DIRECTORIES ${fontconfig_binary_directories} ${cairo_binary_directories})
     endif (CAIRO_FOUND)
 endif (USE_CAIRO)
 
@@ -363,8 +334,6 @@ if (PLUGIN_GDAL OR PLUGIN_OGR)
         PURPOSE "Enables reading/writing several vector and raster formats.")
     
     include_directories(${GDAL_INCLUDE_DIR})
-    get_filename_component(gdal_binary_directories ${GDAL_INCLUDE_DIR}/../bin ABSOLUTE)
-    list(APPEND MAPNIK_BINARY_DIRECTORIES ${gdal_binary_directories})
 endif()
 
 
@@ -377,8 +346,6 @@ if (PLUGIN_SQLITE)
         PURPOSE "Enables queries from SQLite databases.")
     
     include_directories(${SQLITE3_INCLUDE_DIR})
-    get_filename_component(sqlite3_binary_directories ${SQLITE3_LIBRARY}/../../bin ABSOLUTE)
-    list(APPEND MAPNIK_BINARY_DIRECTORIES ${sqlite3_binary_directories})
     
     find_package(SPATIALITE)
     set_package_properties(SPATIALITE PROPERTIES
@@ -389,8 +356,6 @@ if (PLUGIN_SQLITE)
     
     if (SPATIALITE_FOUND)
         include_directories(${SPATIALITE_INCLUDE_DIR})
-        get_filename_component(spatialite_binary_directories ${SPATIALITE_LIBRARY}/../../bin ABSOLUTE)
-        list(APPEND MAPNIK_BINARY_DIRECTORIES ${spatialite_binary_directories})
     endif (SPATIALITE_FOUND)
 endif()
 
@@ -404,33 +369,6 @@ include_directories(deps/mapbox/variant/include)
 add_subdirectory(deps)
 add_subdirectory(src)
 add_subdirectory(plugins)
-
-
-# Fetch dependencies on install with BundleUtilities
-list(REMOVE_DUPLICATES MAPNIK_BINARY_DIRECTORIES)
-install(CODE "
-    unset(mapnik_plugins_absolute)
-    foreach(mapnik_plugin \"${MAPNIK_PLUGINS}\")
-        get_filename_component(mapnik_plugin_absolute \"\${mapnik_plugin}\" ABSOLUTE)
-        list(APPEND mapnik_plugins_absolute \"\${mapnik_plugin_absolute}\")
-    endforeach(mapnik_plugin)
-    
-    unset(mapnik_binary_directories_absolute)
-    foreach(mapnik_binary_directory \"${MAPNIK_BINARY_DIRECTORIES}\")
-        get_filename_component(mapnik_binary_directory_absolute \"\${mapnik_binary_directory}\" ABSOLUTE)
-        list(APPEND mapnik_binary_directories_absolute \"\${mapnik_binary_directory_absolute}\")
-    endforeach(mapnik_binary_directory)
-    
-    get_filename_component(mapnik_binary_absolute \"${CMAKE_INSTALL_PREFIX}/bin/${CMAKE_BUILD_TYPE}/mapnik${CMAKE_EXECUTABLE_SUFFIX}\" ABSOLUTE)
-    include(BundleUtilities)
-    fixup_bundle(
-        \"\${mapnik_binary_absolute}\"
-        \"\${mapnik_plugins_absolute}\"
-        \"\${mapnik_binary_directories_absolute}\")
-    if(WIN32)
-        file(REMOVE \${mapnik_binary_absolute})
-    endif(WIN32)
-")
 
 
 # Install includes

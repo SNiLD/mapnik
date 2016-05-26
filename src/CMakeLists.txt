@@ -178,8 +178,6 @@ if (NATIVE_GRID_RENDERER)
 endif (NATIVE_GRID_RENDERER)
 
 
-set(binary_directories ${MAPNIK_BINARY_DIRECTORIES})
-
 unset(mapnik_libraries)
 
 list(APPEND mapnik_libraries agg)
@@ -270,14 +268,3 @@ target_link_libraries(mapnik ${mapnik_libraries})
 # Create install rules
 install(TARGETS mapnik RUNTIME DESTINATION "bin/${CMAKE_BUILD_TYPE}")
 install(TARGETS mapnik ARCHIVE DESTINATION "lib/MSVC/${CMAKE_BUILD_TYPE}")
-# For windows we need the extension to be same as executables for BundleUtilities
-if (WIN32)
-    install(
-        FILES ${CMAKE_INSTALL_PREFIX}/bin/${CMAKE_BUILD_TYPE}/mapnik${CMAKE_SHARED_LIBRARY_SUFFIX}
-        DESTINATION "bin/${CMAKE_BUILD_TYPE}"
-        RENAME mapnik${CMAKE_EXECUTABLE_SUFFIX})
-endif (WIN32)
-
-# Also add the mapnik.dll as plugin so we get correct dependencies.
-set(MAPNIK_PLUGINS ${MAPNIK_PLUGINS} ${CMAKE_INSTALL_PREFIX}/bin/${CMAKE_BUILD_TYPE}/mapnik${CMAKE_SHARED_LIBRARY_SUFFIX} PARENT_SCOPE)
-set(MAPNIK_BINARY_DIRECTORIES ${binary_directories} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)

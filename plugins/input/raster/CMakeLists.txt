@@ -28,6 +28,3 @@ set_target_properties(raster PROPERTIES SUFFIX ".input")
 target_link_libraries(raster mapnik)
 
 install(TARGETS raster LIBRARY DESTINATION "bin/${CMAKE_BUILD_TYPE}/mapnik/input")
-
-set(MAPNIK_PLUGINS ${MAPNIK_PLUGINS} ${CMAKE_INSTALL_PREFIX}/bin/${CMAKE_BUILD_TYPE}/mapnik/input/raster.input PARENT_SCOPE)
-set(MAPNIK_BINARY_DIRECTORIES ${MAPNIK_BINARY_DIRECTORIES} ${mapnik_plugin_raster_binary_directories} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)

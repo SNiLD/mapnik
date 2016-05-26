@@ -23,3 +23,5 @@ file(GLOB agg_sources
 add_library(agg STATIC ${agg_sources})
 
 target_compile_definitions(agg PRIVATE -DMAPNIK_EXPORTS)
+
+install(DIRECTORY include/ DESTINATION include/agg FILES_MATCHING PATTERN "agg*")

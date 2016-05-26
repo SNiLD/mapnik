@@ -19,6 +19,5 @@
 add_subdirectory(agg)
 
 # Install dependencies
-install(DIRECTORY sparsehash DESTINATION include)
-install(DIRECTORY agg/include DESTINATION include/agg FILES_MATCHING PATTERN "agg*")
+install(DIRECTORY mapnik DESTINATION include)
 install(DIRECTORY mapbox/variant/include DESTINATION include/mapbox FILES_MATCHING PATTERN "*.hpp")
