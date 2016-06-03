@@ -20,4 +20,4 @@ add_subdirectory(agg)
 
 # Install dependencies
 install(DIRECTORY mapnik DESTINATION include)
-install(DIRECTORY mapbox/variant/include DESTINATION include/mapbox FILES_MATCHING PATTERN "*.hpp")
+install(DIRECTORY mapbox/variant DESTINATION include/mapbox FILES_MATCHING PATTERN "*.hpp")
