@@ -21,3 +21,7 @@ file(GLOB mapnik-wkt_sources
      *.cpp)
      
 add_library(mapnik-wkt STATIC ${mapnik-wkt_sources})
+
+if (NOT WIN32)
+    set_target_properties(mapnik-wkt PROPERTIES COMPILE_FLAGS "-fPIC")
+endif()

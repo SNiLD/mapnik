@@ -180,7 +180,9 @@ endif (NATIVE_GRID_RENDERER)
 
 unset(mapnik_libraries)
 
-list(APPEND mapnik_libraries agg)
+if (BUILD_SHARED_LIBS)
+    list(APPEND mapnik_libraries agg)
+endif()
 list(APPEND mapnik_libraries ${Boost_LIBRARIES})
 list(APPEND mapnik_libraries ${ICU_LIBRARIES})
 list(APPEND mapnik_libraries ${ICONV_LIBRARY})
@@ -261,9 +263,13 @@ endif (USE_CAIRO AND CAIRO_FOUND)
 # Create the mapnik library
 add_library(mapnik ${mapnik_sources})
 
+if (NOT BUILD_SHARED_LIBS AND NOT WIN32)
+    set_target_properties(mapnik PROPERTIES COMPILE_FLAGS "-fPIC")
+endif()
+
 set_target_properties(mapnik PROPERTIES DEFINE_SYMBOL MAPNIK_EXPORTS)
 
-target_link_libraries(mapnik ${mapnik_libraries})
+target_link_libraries(mapnik ${mapnik_libraries} ${CMAKE_DL_LIBS})
 
 # Create install rules
 install(TARGETS mapnik RUNTIME DESTINATION "bin/${CMAKE_BUILD_TYPE}")

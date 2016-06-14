@@ -21,3 +21,7 @@ file(GLOB mapnik-json_sources
      *.cpp)
      
 add_library(mapnik-json STATIC ${mapnik-json_sources})
+
+if (NOT WIN32)
+    set_target_properties(mapnik-json PROPERTIES COMPILE_FLAGS "-fPIC")
+endif()

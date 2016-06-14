@@ -46,6 +46,7 @@ set(DEFAULT_LOG_SEVERITY "error" CACHE STRING "The DEFAULT_LOG_SEVERITY option c
 option(RENDERING_STATS "This is an experimental option that may be removed in future releases. It defaults to FALSE, but can be set to TRUE to enable verbose logging of rendering behavior providing the timing of style and layer processing." FALSE)
 option(THREAD_SAFE "Build mapnik in thread-safe mode" TRUE)
 option(BIGINT "Compile support for 64-bit integers in mapnik::value" TRUE)
+option(CPP_TESTS "Compile the C++ tests" TRUE)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/Modules)
 
@@ -87,7 +88,7 @@ set(MAPNIK_BINARY_DIRECTORIES "" CACHE INTERNAL "Full paths to directories of de
 
 # Enable logging for debug builds.
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_definitions(-DMAPNIK_DEBUG)
+    add_definitions(-DDEBUG -DMAPNIK_DEBUG)
     set(ENABLE_LOG TRUE)
 endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
 
@@ -115,6 +116,7 @@ add_feature_info("64-bit integers" BIGINT "Compile support for 64-bit integers i
 add_feature_info("Statistics" ENABLE_STATS "Compile with extensive statistics")
 add_feature_info("Logging" ENABLE_LOG "Compile with logging support")
 add_feature_info("Rendering statistics" RENDERING_STATS "Compile with rendering stats")
+add_feature_info("Tests" CPP_TESTS "Compile the C++ tests")
 
 if (THREAD_SAFE)
     add_definitions(-DMAPNIK_THREADSAFE)
@@ -149,7 +151,13 @@ endif (NATIVE_GRID_RENDERER)
 
 
 # boost
-find_package(Boost REQUIRED COMPONENTS date_time filesystem regex system)
+set(boost_components date_time filesystem regex system)
+
+if (CPP_TESTS)
+    set(boost_components ${boost_components} program_options)
+endif()
+
+find_package(Boost REQUIRED COMPONENTS ${boost_components})
 set_package_properties(Boost PROPERTIES
     DESCRIPTION "Portable C++ source libraries"
     URL "http://www.boost.org/"
@@ -259,6 +267,7 @@ if (USE_JPEG)
         TYPE RECOMMENDED
         PURPOSE "Enables using JPEG images.")
     if (JPEG_FOUND)
+        add_definitions(-DHAVE_JPEG)
         include_directories(${JPEG_INCLUDE_DIR})
     endif (JPEG_FOUND)
 endif (USE_JPEG)
@@ -273,7 +282,7 @@ if (USE_PNG)
         PURPOSE "Enables using PNG images.")
     if (PNG_FOUND)
         include_directories(${PNG_INCLUDE_DIRS})
-        add_definitions(${PNG_DEFINITIONS})
+        add_definitions(-DHAVE_PNG ${PNG_DEFINITIONS})
     endif (PNG_FOUND)
 endif (USE_PNG)
 
@@ -286,7 +295,7 @@ if (USE_TIFF)
         TYPE RECOMMENDED
         PURPOSE "Enables using TIFF images.")
     if (TIFF_FOUND)
-        include_directories(${TIFF_INCLUDE_DIR})
+        include_directories(-DHAVE_TIFF ${TIFF_INCLUDE_DIR})
     endif (TIFF_FOUND)
 endif (USE_TIFF)
 
@@ -371,6 +380,10 @@ include_directories(deps/mapbox/variant/include)
 add_subdirectory(deps)
 add_subdirectory(src)
 add_subdirectory(plugins)
+
+if (CPP_TESTS)
+    add_subdirectory(test)
+endif (CPP_TESTS)
 
 
 # Install includes

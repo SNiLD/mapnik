@@ -22,6 +22,10 @@ file(GLOB agg_sources
      
 add_library(agg STATIC ${agg_sources})
 
+if (NOT WIN32)
+    set_target_properties(agg PROPERTIES COMPILE_FLAGS "-fPIC")
+endif()
+
 target_compile_definitions(agg PRIVATE -DMAPNIK_EXPORTS)
 
 install(DIRECTORY include/ DESTINATION include/agg FILES_MATCHING PATTERN "agg*")
