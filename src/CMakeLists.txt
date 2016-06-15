@@ -73,6 +73,7 @@ set(mapnik_sources
     rule.cpp
     save_map.cpp
     wkb.cpp
+    twkb.cpp
     projection.cpp
     proj_transform.cpp
     scale_denominator.cpp
@@ -93,6 +94,7 @@ set(mapnik_sources
     warp.cpp
     css_color_grammar.cpp
     vertex_cache.cpp
+    vertex_adapters.cpp
     text/font_library.cpp
     text/text_layout.cpp
     text/text_line.cpp
@@ -129,6 +131,7 @@ set(mapnik_sources
     renderer_common/render_pattern.cpp
     renderer_common/render_thunk_extractor.cpp
     math.cpp
+    value.cpp
     
     # add these to the compile flags no matter what
     # to make it safe to try to compile them from Makefile wrapper

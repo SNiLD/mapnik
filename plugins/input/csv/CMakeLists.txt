@@ -17,6 +17,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 set(mapnik_plugin_csv_sources
+    csv_utils.cpp
     csv_datasource.cpp
     csv_featureset.cpp
     csv_inline_featureset.cpp
