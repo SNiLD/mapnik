@@ -295,7 +295,8 @@ if (USE_TIFF)
         TYPE RECOMMENDED
         PURPOSE "Enables using TIFF images.")
     if (TIFF_FOUND)
-        include_directories(-DHAVE_TIFF ${TIFF_INCLUDE_DIR})
+        include_directories(${TIFF_INCLUDE_DIR})
+        add_definitions(-DHAVE_TIFF)
     endif (TIFF_FOUND)
 endif (USE_TIFF)
 
