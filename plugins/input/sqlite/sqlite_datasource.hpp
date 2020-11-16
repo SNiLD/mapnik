@@ -64,6 +64,8 @@ private:
     void parse_attachdb(std::string const& attachdb) const;
     std::string populate_tokens(std::string const& sql, double pixel_width, double pixel_height) const;
 
+    static const double FMAX;
+
     mapnik::box2d<double> extent_;
     bool extent_initialized_;
     mapnik::datasource::datasource_t type_;
@@ -79,6 +81,7 @@ private:
     int row_offset_;
     mapnik::value_integer row_limit_;
     // TODO - also add to postgis.input
+    const std::string scale_denom_token_;
     const std::string intersects_token_;
     const std::string pixel_width_token_;
     const std::string pixel_height_token_;

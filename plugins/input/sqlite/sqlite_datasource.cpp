@@ -40,6 +40,8 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/tokenizer.hpp>
 
+const double sqlite_datasource::FMAX = (std::numeric_limits<double>::max)();
+
 using mapnik::box2d;
 using mapnik::coord2d;
 using mapnik::query;
@@ -66,6 +68,7 @@ sqlite_datasource::sqlite_datasource(parameters const& params)
       key_field_(*params.get<std::string>("key_field", "")),
       row_offset_(*params.get<mapnik::value_integer>("row_offset", 0)),
       row_limit_(*params.get<mapnik::value_integer>("row_limit", 0)),
+      scale_denom_token_("!scale_denominator!"),
       intersects_token_("!intersects!"),
       pixel_width_token_("!pixel_width!"),
       pixel_height_token_("!pixel_height!"),
@@ -367,6 +370,14 @@ sqlite_datasource::sqlite_datasource(parameters const& params)
 std::string sqlite_datasource::populate_tokens(std::string const& sql, double pixel_width, double pixel_height) const
 {
     std::string populated_sql = sql;
+
+    if (boost::algorithm::icontains(sql, scale_denom_token_))
+    {
+        std::ostringstream ss;
+        ss << FMAX;
+        boost::algorithm::replace_all(populated_sql, scale_denom_token_, ss.str());
+    }
+
     if (boost::algorithm::ifind_first(populated_sql, intersects_token_))
     {
         // replace with dummy comparison that is true
@@ -536,6 +547,13 @@ featureset_ptr sqlite_datasource::features(query const& q) const
         s << " FROM ";
 
         std::string query(table_);
+
+        if (boost::algorithm::icontains(query, scale_denom_token_))
+        {
+            std::ostringstream ss;
+            ss << q.scale_denominator();
+            boost::algorithm::replace_all(query, scale_denom_token_, ss.str());
+        }
 
         if (! key_field_.empty() && has_spatial_index_)
         {
